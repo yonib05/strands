@@ -90,8 +90,8 @@ To support a polyglot ecosystem, Filament defines **Loader Capabilities**. A Hos
 
 The following capabilities are reserved for future specification and are NOT included in v0.1.0:
 
-- `filament.ext.worker` (Concurrency)
-- `filament.ext.gpu` (Tensor Buffers)
+- `filament.ext.worker`
+- `filament.ext.gpu`
 
 ---
 
@@ -103,21 +103,29 @@ Filament is designed to decouple the logical reasoning of an autonomous agent fr
 
 ### 2.1 The Reactive State Machine
 
-Filament inverts the traditional long-running process model. The Agent exists only for the duration of a single **Weave**, which is a transient execution cycle defined by the following formal model.
+Filament inverts the traditional long-running process model. The Agent executes as a transient transition function called a **Weave**.
 
-Let E denote the space of all valid Events, and C denote the execution context. The Weave is a pure function:
+Let $E$ be the set of valid Events, $C$ the execution context, $S$ the set of valid Internal States (Memory/Heap), and $F$ the set of valid Failure states. The Weave is generally defined as:
 
-`Weave: E* x C -> E* U {Failure}`
+$$\text{Weave}: E^* \times C \times S \to (E^* \times S) \cup F$$
 
-where `E*` is the set of all finite event sequences (timelines). The function must satisfy:
+where $E^*$ is the set of all finite event sequences. The specific behavior depends on the negotiated Capability Profile:
 
-1.  **Logical Determinism:** For any history `H` and context `c`, `Weave(H, c)` must always yield the same result regarding Control Flow and Data Layout.
-2.  **Hardware Dependency:** Bitwise determinism of floating-point arithmetic is **hardware-dependent** (e.g., AVX vs NEON Fused Multiply-Add) and is outside the scope of this ABI. Filament guarantees logical replayability within identical hardware classes.
-3.  **Monotonicity:** Events in `H` are never modified. If the output is a new timeline, `H` is a strict prefix of that new timeline.
-4.  **Finite Execution:** The Host guarantees termination via strict resource budgeting (Compute Units).
+1.  **Stateless Mode (Pure):** The Agent does not persist memory between cycles. The input state is always the empty set $\emptyset$, and the output state is discarded. The function reduces to:
 
-**Stochastic Determinism:**
-Plugins **MUST** derive all pseudo-random operations from the cryptographic `random_seed` provided in the Execution Context. All external non-deterministic inputs such as API responses or sensor data **MUST** enter the system as Events on the Timeline. This ensures that any Weave cycle can be perfectly replayed by restoring the History and the Context.
+$$\text{Weave}\_{pure}: E^* \times C \to E^* \cup F$$
+
+2.  **Stateful Mode:** The Agent persists its linear memory or heap. The output state $S'$ from cycle $N$ becomes the input state $S$ for cycle $N+1$.
+
+$$\text{Weave}\_{stateful}: E^* \times C \times S \to (E^* \times S') \cup F$$
+
+Regardless of the mode, the function enforces the following properties:
+
+1.  **Logical Determinism:** For a fixed binary image and hardware architecture, the function is deterministic. Given an identical history $H$, context $c$, and input state $s$, the execution yields an identical result.
+2.  **Artifact Integrity:** The definition of the transition function is bound to the specific compiled binary artifact and instruction set architecture.
+3.  **Monotonicity:** The operation preserves history. If the result is a successful timeline $T \in E^*$, the input history $H$ is a prefix of $T$.
+4.  **Bounded Termination:** The function is total. The Host enforces termination through strict resource budgeting to ensure the function maps to a valid output in finite time.
+5.  **Stochastic Isolation:** The function execution is closed over its inputs. Pseudo-random operations derive strictly from the cryptographic seed within $C$. This ensures the tuple $(H, C, S)$ contains the complete state necessary for bitwise replay.
 
 ### 2.2 Memory Ownership Models
 
