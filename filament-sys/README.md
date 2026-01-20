@@ -1,3 +1,5 @@
+[THIS IS AN AI GENERATED ARTIFACT MEANT TO BE REPLACED]
+
 # Understanding the Filament Specification
 
 This guide explains the Filament Specification, building up from core concepts to technical details.
