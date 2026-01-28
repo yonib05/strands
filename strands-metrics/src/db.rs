@@ -141,7 +141,10 @@ pub fn init_db<P: AsRef<Path>>(path: P) -> Result<Connection> {
             ci_runs INTEGER DEFAULT 0,
 
             stars INTEGER DEFAULT 0,
+
+            open_items_count INTEGER DEFAULT 0,
             open_issues_count INTEGER DEFAULT 0,
+            open_prs_count INTEGER DEFAULT 0,
 
             time_to_first_response REAL DEFAULT 0,
             avg_issue_resolution_time REAL DEFAULT 0,

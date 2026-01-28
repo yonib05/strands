@@ -107,13 +107,33 @@ pub fn compute_metrics(conn: &Connection) -> Result<()> {
             params![date_str],
         )?;
 
-        // Open issues snapshot
+        // Open items snapshot (combined issues + PRs for backward compatibility)
         conn.execute(
             "UPDATE daily_metrics
-             SET open_issues_count = (
+             SET open_items_count = (
                  (SELECT count(*) FROM issues WHERE repo = daily_metrics.repo AND date(created_at) <= date(daily_metrics.date) AND (closed_at IS NULL OR date(closed_at) > date(daily_metrics.date)))
                  +
                  (SELECT count(*) FROM pull_requests WHERE repo = daily_metrics.repo AND date(created_at) <= date(daily_metrics.date) AND (closed_at IS NULL OR date(closed_at) > date(daily_metrics.date)))
+             )
+             WHERE date = ?1",
+            params![date_str]
+        )?;
+
+        // Open issues count (just issues, no PRs)
+        conn.execute(
+            "UPDATE daily_metrics
+             SET open_issues_count = (
+                 SELECT count(*) FROM issues WHERE repo = daily_metrics.repo AND date(created_at) <= date(daily_metrics.date) AND (closed_at IS NULL OR date(closed_at) > date(daily_metrics.date))
+             )
+             WHERE date = ?1",
+            params![date_str]
+        )?;
+
+        // Open PRs count
+        conn.execute(
+            "UPDATE daily_metrics
+             SET open_prs_count = (
+                 SELECT count(*) FROM pull_requests WHERE repo = daily_metrics.repo AND date(created_at) <= date(daily_metrics.date) AND (closed_at IS NULL OR date(closed_at) > date(daily_metrics.date))
              )
              WHERE date = ?1",
             params![date_str]

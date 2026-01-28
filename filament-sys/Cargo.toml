@@ -6,4 +6,3 @@ edition = "2024"
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.72"
