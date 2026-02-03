@@ -1,0 +1,50 @@
+name: Update Metrics Database
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # 6 AM UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Sync GitHub Data
+        env:
+          GITHUB_TOKEN: ${{ secrets.METRICS_PAT }}
+          RUST_LOG: info
+        run: cargo run --release -- sync
+
+      - name: Garbage Collection (Sweep)
+        env:
+          GITHUB_TOKEN: ${{ secrets.METRICS_PAT }}
+          RUST_LOG: info
+        run: cargo run --release -- sweep
+
+      - name: Push to Live Branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B live
+          git add metrics.db
+          git commit -m "chore: update metrics.db for $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push origin live --force
