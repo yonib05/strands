@@ -187,7 +187,39 @@ pub fn list_goals(conn: &Connection) -> Result<Vec<Goal>> {
     Ok(goals)
 }
 
-/// Load team members from a YAML config or list
+/// A team member entry from YAML configuration
+#[derive(Debug, Deserialize)]
+pub struct TeamMemberEntry {
+    pub username: String,
+    pub display_name: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct TeamConfig {
+    members: Vec<TeamMemberEntry>,
+}
+
+/// Load team members from a YAML config file
+pub fn load_team_from_yaml<P: AsRef<Path>>(conn: &Connection, yaml_path: P) -> Result<usize> {
+    let content = fs::read_to_string(yaml_path)?;
+    let config: TeamConfig = serde_yaml::from_str(&content)?;
+
+    let mut count = 0;
+    for member in config.members {
+        conn.execute(
+            "INSERT INTO team_members (username, display_name, added_at)
+             VALUES (?1, ?2, datetime('now'))
+             ON CONFLICT(username) DO UPDATE SET
+                display_name = excluded.display_name,
+                added_at = datetime('now')",
+            params![member.username, member.display_name],
+        )?;
+        count += 1;
+    }
+    Ok(count)
+}
+
+/// Load team members from a list (for CLI --members flag)
 pub fn load_team_members(conn: &Connection, members: &[(&str, Option<&str>)]) -> Result<usize> {
     let mut count = 0;
     for (username, display_name) in members {

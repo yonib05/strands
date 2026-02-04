@@ -44,9 +44,12 @@ enum Commands {
     ListGoals,
     /// Load team members into the database for dashboard queries.
     LoadTeam {
-        /// Comma-separated list of GitHub usernames
+        /// Path to team.yaml config file (default: strands-grafana/team.yaml)
+        #[clap(default_value = "strands-grafana/team.yaml")]
+        config_path: PathBuf,
+        /// Comma-separated list of GitHub usernames (overrides config file)
         #[clap(long, value_delimiter = ',')]
-        members: Vec<String>,
+        members: Option<Vec<String>>,
     },
     /// Sync package download stats from PyPI and npm.
     SyncDownloads {
@@ -171,10 +174,16 @@ async fn main() -> Result<()> {
                 );
             }
         }
-        Commands::LoadTeam { members } => {
-            let member_tuples: Vec<(&str, Option<&str>)> =
-                members.iter().map(|m| (m.as_str(), None)).collect();
-            let count = goals::load_team_members(&conn, &member_tuples)?;
+        Commands::LoadTeam { config_path, members } => {
+            let count = if let Some(member_list) = members {
+                // Use --members flag if provided
+                let member_tuples: Vec<(&str, Option<&str>)> =
+                    member_list.iter().map(|m| (m.as_str(), None)).collect();
+                goals::load_team_members(&conn, &member_tuples)?
+            } else {
+                // Load from config file
+                goals::load_team_from_yaml(&conn, &config_path)?
+            };
             println!("Loaded {} team members", count);
         }
         Commands::SyncDownloads { config_path, days } => {

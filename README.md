@@ -142,11 +142,14 @@ Goals control both threshold colors (green/yellow/red) and goal lines on dashboa
 The Team Dashboard uses a `team_members` table to track specific team members for performance metrics.
 
 ```bash
-# Load team members (comma-separated GitHub usernames)
-cargo run --release -- load-team --members=alice,bob,charlie
+# Load team from config file (default: strands-grafana/team.yaml)
+cargo run --release -- load-team
 
-# Example with actual team
-cargo run --release -- load-team --members=afarntrog,lizradway,JackYPCOnline,chaynabors,dbschmigelski,zastrowm,mehtarac,mkmeral,Unshure,pgrayy,poshinchen
+# Load from custom config file
+cargo run --release -- load-team path/to/team.yaml
+
+# Or load directly via command line (overrides config file)
+cargo run --release -- load-team --members=alice,bob,charlie
 ```
 
 **Note:** This is different from how other dashboards determine internal vs external contributors:
@@ -291,6 +294,20 @@ The following metrics are pre-configured in goals.yaml:
 | `community_pr_percent_min` | Percentage of merged PRs from community | higher_is_better |
 | `contributor_retention_min` | Percentage of returning contributors | higher_is_better |
 | `stale_prs_max` | Maximum acceptable stale PRs | lower_is_better |
+
+### strands-grafana/team.yaml
+
+Defines team members for the Team Dashboard. These are the specific people whose performance you want to track.
+
+```yaml
+members:
+  - username: alice
+  - username: bob
+    display_name: "Bob Smith"  # optional
+  - username: charlie
+```
+
+**Note:** This is separate from GitHub org membership. Use this to track a specific subset of contributors (e.g., core maintainers) rather than everyone in the org.
 
 ### strands-grafana/packages.yaml
 

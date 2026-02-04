@@ -47,6 +47,12 @@ jobs:
           RUST_LOG: info
         run: cargo run --release -- sync-downloads
 
+      - name: Load Goals Configuration
+        run: cargo run --release -- load-goals strands-grafana/goals.yaml
+
+      - name: Load Team Configuration
+        run: cargo run --release -- load-team strands-grafana/team.yaml
+
       - name: Commit and Push to Main
         run: |
           git config --global user.name "github-actions[bot]"
