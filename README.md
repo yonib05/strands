@@ -128,15 +128,28 @@ cargo run --release -- query "SELECT * FROM daily_metrics LIMIT 5"
 
 ### strands-grafana/goals.yaml
 
-Defines goal thresholds for rate/time-based metrics:
+Defines goal thresholds for rate/time-based metrics. Each goal can include an optional label for dashboard display:
 
 ```yaml
 goals:
-  avg_merge_time_hours: 24        # Target merge time
-  time_to_first_review_hours: 8   # Target review response
-  ci_failure_rate_percent: 5      # Max acceptable CI failures
-  pr_acceptance_rate_min: 80      # Min PR acceptance rate
+  # Simple format (value only)
+  avg_merge_time_hours: 24
+
+  # Extended format with custom label
+  cycle_time_hours:
+    value: 336
+    label: "Goal (14d)"
+
+  time_to_first_review_hours:
+    value: 72
+    label: "Goal (72h)"
+
+  ci_failure_rate_percent:
+    value: 30
+    label: "Goal (30%)"
 ```
+
+After updating goals, run `load-goals` to sync to the database. The `update_dashboard_goals.py` script can update dashboard panel labels to match.
 
 ### strands-grafana/packages.yaml
 

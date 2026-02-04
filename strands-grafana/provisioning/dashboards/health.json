@@ -102,7 +102,7 @@
         "type": "frser-sqlite-datasource",
         "uid": "P2289B60D79A89B0C"
       },
-      "description": "Average hours from PR open to merge. Fixed 14-day lookback - does not change with date picker. Goal: 24h",
+      "description": "Average hours from PR open to merge. Fixed 14-day lookback - does not change with date picker. Goal threshold shown on related charts.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -174,7 +174,7 @@
         "type": "frser-sqlite-datasource",
         "uid": "P2289B60D79A89B0C"
       },
-      "description": "Percentage of merged PRs from community contributors. Fixed 30-day lookback - does not change with date picker. Goal: 20%",
+      "description": "Percentage of merged PRs from community contributors. Fixed 30-day lookback - does not change with date picker. Goal threshold shown on related charts.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -5012,7 +5012,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Goal (5%)"
+              "options": "Goal (30%)"
             },
             "properties": [
               {
@@ -5075,9 +5075,9 @@
           ]
         },
         {
-          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (5%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (5%)\"",
+          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (30%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (30%)\"",
           "queryType": "table",
-          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (5%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (5%)\"",
+          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (30%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'ci_failure_rate_percent') as \"Goal (30%)\"",
           "refId": "Goal",
           "timeColumns": [
             "time"
@@ -5592,7 +5592,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Goal (80%)"
+              "options": "Goal (60%)"
             },
             "properties": [
               {
@@ -5655,9 +5655,9 @@
           ]
         },
         {
-          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (80%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (80%)\"",
+          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (60%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (60%)\"",
           "queryType": "table",
-          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (80%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (80%)\"",
+          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (60%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'pr_acceptance_rate_min') as \"Goal (60%)\"",
           "refId": "Goal",
           "timeColumns": [
             "time"
@@ -10098,7 +10098,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Goal (48h)"
+              "options": "Goal (14d)"
             },
             "properties": [
               {
@@ -10161,9 +10161,9 @@
           ]
         },
         {
-          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (48h)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (48h)\"",
+          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (14d)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (14d)\"",
           "queryType": "table",
-          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (48h)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (48h)\"",
+          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (14d)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'cycle_time_hours') as \"Goal (14d)\"",
           "refId": "Goal",
           "timeColumns": [
             "time"
@@ -10575,7 +10575,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Goal (8h)"
+              "options": "Goal (72h)"
             },
             "properties": [
               {
@@ -10638,9 +10638,9 @@
           ]
         },
         {
-          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (8h)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (8h)\"",
+          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (72h)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (72h)\"",
           "queryType": "table",
-          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (8h)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (8h)\"",
+          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (72h)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'time_to_first_review_hours') as \"Goal (72h)\"",
           "refId": "Goal",
           "timeColumns": [
             "time"
@@ -10875,7 +10875,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Goal (30%)"
+              "options": "Goal (25%)"
             },
             "properties": [
               {
@@ -10942,9 +10942,9 @@
           ]
         },
         {
-          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (30%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (30%)\"",
+          "queryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (25%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (25%)\"",
           "queryType": "table",
-          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (30%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (30%)\"",
+          "rawQueryText": "SELECT $__from / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (25%)\"\nUNION ALL\nSELECT $__to / 1000 as time, (SELECT value FROM goals WHERE metric = 'contributor_retention_min') as \"Goal (25%)\"",
           "refId": "Goal",
           "timeColumns": [
             "time"

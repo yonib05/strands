@@ -145,10 +145,11 @@ async fn main() -> Result<()> {
         }
         Commands::ListGoals => {
             let all_goals = goals::list_goals(&conn)?;
-            println!("{:<40} | {}", "Metric", "Value");
-            println!("{}", "-".repeat(55));
-            for (metric, value) in all_goals {
-                println!("{:<40} | {}", metric, value);
+            println!("{:<40} | {:>10} | {}", "Metric", "Value", "Label");
+            println!("{}", "-".repeat(75));
+            for (metric, value, label) in all_goals {
+                let label_str = label.unwrap_or_else(|| "-".to_string());
+                println!("{:<40} | {:>10} | {}", metric, value, label_str);
             }
         }
         Commands::SyncDownloads { config_path, days } => {

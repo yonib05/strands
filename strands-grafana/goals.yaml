@@ -8,16 +8,34 @@
 
 goals:
   # Time Metrics (hours) - lower is better
-  avg_merge_time_hours: 24            # Target: merge PRs within 24 hours
-  cycle_time_hours: 336                # Target cycle time (open to merge)
-  time_to_first_review_hours: 72       # Target: first review within 72 hours
-  time_to_first_response_hours: 24    # Target: first response within 24 hours
+  avg_merge_time_hours:
+    value: 24
+    label: "Goal (24h)"
+  cycle_time_hours:
+    value: 336
+    label: "Goal (14d)"
+  time_to_first_review_hours:
+    value: 72
+    label: "Goal (72h)"
+  time_to_first_response_hours:
+    value: 24
+    label: "Goal (24h)"
 
   # Quality Metrics (percentages)
-  ci_failure_rate_percent: 30          # Target: less than 30% CI failures
-  pr_acceptance_rate_min: 60          # Min % of PRs that get merged (higher is better)
+  ci_failure_rate_percent:
+    value: 30
+    label: "Goal (30%)"
+  pr_acceptance_rate_min:
+    value: 60
+    label: "Goal (60%)"
 
   # Community Metrics (percentages)
-  community_pr_percent_min: 20        # Min % of PRs from community (higher is better)
-  community_share_percent_min: 15     # Min % of merged PRs from community
-  contributor_retention_min: 25       # Min % of contributors who return
+  community_pr_percent_min:
+    value: 20
+    label: "Goal (20%)"
+  community_share_percent_min:
+    value: 15
+    label: "Goal (15%)"
+  contributor_retention_min:
+    value: 25
+    label: "Goal (25%)"
