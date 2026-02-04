@@ -186,25 +186,30 @@ pub async fn backfill_npm_downloads(
 
 #[derive(Debug, Deserialize)]
 pub struct PackagesConfig {
-    pub packages: PackagesList,
     #[serde(default)]
     pub repo_mappings: std::collections::HashMap<String, Vec<PackageMapping>>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct PackagesList {
-    #[serde(default)]
-    pub pypi: Vec<String>,
-    #[serde(default)]
-    pub npm: Vec<String>,
-    #[serde(default)]
-    pub homebrew: Vec<String>,
-}
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct PackageMapping {
     pub package: String,
     pub registry: String,
+}
+
+impl PackagesConfig {
+    /// Get all unique packages for a given registry
+    pub fn packages_for_registry(&self, registry: &str) -> Vec<String> {
+        let mut packages: Vec<String> = self
+            .repo_mappings
+            .values()
+            .flatten()
+            .filter(|m| m.registry == registry)
+            .map(|m| m.package.clone())
+            .collect();
+        packages.sort();
+        packages.dedup();
+        packages
+    }
 }
 
 pub fn load_packages_config(path: &str) -> Result<PackagesConfig> {

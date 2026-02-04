@@ -159,16 +159,16 @@ async fn main() -> Result<()> {
             println!("Loaded {} repo-to-package mappings\n", mapping_count);
 
             println!("Syncing PyPI packages...");
-            for package in &config.packages.pypi {
-                match downloads::sync_pypi_downloads(&conn, package, days).await {
+            for package in config.packages_for_registry("pypi") {
+                match downloads::sync_pypi_downloads(&conn, &package, days).await {
                     Ok(count) => println!("  {} - {} data points", package, count),
                     Err(e) => eprintln!("  {} - Error: {}", package, e),
                 }
             }
 
             println!("\nSyncing npm packages...");
-            for package in &config.packages.npm {
-                match downloads::sync_npm_downloads(&conn, package, days).await {
+            for package in config.packages_for_registry("npm") {
+                match downloads::sync_npm_downloads(&conn, &package, days).await {
                     Ok(count) => println!("  {} - {} data points", package, count),
                     Err(e) => eprintln!("  {} - Error: {}", package, e),
                 }
@@ -184,16 +184,16 @@ async fn main() -> Result<()> {
             println!("Loaded {} repo-to-package mappings\n", mapping_count);
 
             println!("Backfilling PyPI packages (up to 180 days)...");
-            for package in &config.packages.pypi {
-                match downloads::backfill_pypi_downloads(&conn, package).await {
+            for package in config.packages_for_registry("pypi") {
+                match downloads::backfill_pypi_downloads(&conn, &package).await {
                     Ok(count) => println!("  {} - {} data points", package, count),
                     Err(e) => eprintln!("  {} - Error: {}", package, e),
                 }
             }
 
             println!("\nBackfilling npm packages (up to 365 days)...");
-            for package in &config.packages.npm {
-                match downloads::backfill_npm_downloads(&conn, package).await {
+            for package in config.packages_for_registry("npm") {
+                match downloads::backfill_npm_downloads(&conn, &package).await {
                     Ok(count) => println!("  {} - {} data points", package, count),
                     Err(e) => eprintln!("  {} - Error: {}", package, e),
                 }
