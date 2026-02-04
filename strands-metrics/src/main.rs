@@ -1,6 +1,7 @@
 mod aggregates;
 mod client;
 mod db;
+mod downloads;
 mod goals;
 
 use anyhow::Result;
@@ -40,6 +41,21 @@ enum Commands {
     },
     /// List all configured goals.
     ListGoals,
+    /// Sync package download stats from PyPI and npm.
+    SyncDownloads {
+        /// Path to packages.yaml config file
+        #[clap(long, default_value = "strands-grafana/packages.yaml")]
+        config_path: PathBuf,
+        /// Number of days to fetch (default: 30)
+        #[clap(long, default_value = "30")]
+        days: i64,
+    },
+    /// Backfill historical download data (PyPI: ~180 days, npm: ~365 days).
+    BackfillDownloads {
+        /// Path to packages.yaml config file
+        #[clap(long, default_value = "strands-grafana/packages.yaml")]
+        config_path: PathBuf,
+    },
 }
 
 #[tokio::main]
@@ -134,6 +150,56 @@ async fn main() -> Result<()> {
             for (metric, value) in all_goals {
                 println!("{:<40} | {}", metric, value);
             }
+        }
+        Commands::SyncDownloads { config_path, days } => {
+            let config = downloads::load_packages_config(config_path.to_str().unwrap())?;
+
+            // Load repo-to-package mappings
+            let mapping_count = downloads::load_repo_mappings(&conn, &config)?;
+            println!("Loaded {} repo-to-package mappings\n", mapping_count);
+
+            println!("Syncing PyPI packages...");
+            for package in &config.packages.pypi {
+                match downloads::sync_pypi_downloads(&conn, package, days).await {
+                    Ok(count) => println!("  {} - {} data points", package, count),
+                    Err(e) => eprintln!("  {} - Error: {}", package, e),
+                }
+            }
+
+            println!("\nSyncing npm packages...");
+            for package in &config.packages.npm {
+                match downloads::sync_npm_downloads(&conn, package, days).await {
+                    Ok(count) => println!("  {} - {} data points", package, count),
+                    Err(e) => eprintln!("  {} - Error: {}", package, e),
+                }
+            }
+
+            println!("\nDownload sync complete!");
+        }
+        Commands::BackfillDownloads { config_path } => {
+            let config = downloads::load_packages_config(config_path.to_str().unwrap())?;
+
+            // Load repo-to-package mappings
+            let mapping_count = downloads::load_repo_mappings(&conn, &config)?;
+            println!("Loaded {} repo-to-package mappings\n", mapping_count);
+
+            println!("Backfilling PyPI packages (up to 180 days)...");
+            for package in &config.packages.pypi {
+                match downloads::backfill_pypi_downloads(&conn, package).await {
+                    Ok(count) => println!("  {} - {} data points", package, count),
+                    Err(e) => eprintln!("  {} - Error: {}", package, e),
+                }
+            }
+
+            println!("\nBackfilling npm packages (up to 365 days)...");
+            for package in &config.packages.npm {
+                match downloads::backfill_npm_downloads(&conn, package).await {
+                    Ok(count) => println!("  {} - {} data points", package, count),
+                    Err(e) => eprintln!("  {} - Error: {}", package, e),
+                }
+            }
+
+            println!("\nBackfill complete!");
         }
     }
 

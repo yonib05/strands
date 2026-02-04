@@ -2640,6 +2640,7 @@ dependencies = [
  "http",
  "indicatif",
  "octocrab",
+ "reqwest 0.12.28",
  "rusqlite",
  "serde",
  "serde_json",
